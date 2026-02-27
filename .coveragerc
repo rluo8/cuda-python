@@ -11,10 +11,11 @@ plugins = Cython.Coverage
 core = ctrace
 branch = False
 relative_files = True
-# Omit Windows-specific definition file that causes plugin errors
+# Omits specific definition files that causes plugin errors
 omit =
     */windll.pxd
     */_lib/windll.pxd
+    */_lib/utils.pxd
 
 [report]
 show_missing = true
