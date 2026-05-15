@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: Copyright (c) 2024-2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-FileCopyrightText: Copyright (c) 2024-2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 
 import multiprocessing
@@ -284,6 +284,20 @@ def mempool_device_x2():
 def mempool_device_x3():
     """Fixture that provides three devices if available, otherwise skips test."""
     return _mempool_device_impl(3)
+
+
+@pytest.fixture
+def ipc_mempool_device_x2(mempool_device_x2):
+    """Fixture that provides two IPC-capable mempool devices, or skips."""
+    from helpers import IS_WSL, supports_ipc_mempool
+
+    if not all(device.properties.handle_type_posix_file_descriptor_supported for device in mempool_device_x2):
+        pytest.skip("Device does not support IPC")
+
+    if IS_WSL or not all(supports_ipc_mempool(device) for device in mempool_device_x2):
+        pytest.skip("Driver rejects IPC-enabled mempool creation on this platform")
+
+    return mempool_device_x2
 
 
 @pytest.fixture(
